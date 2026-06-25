@@ -1,0 +1,1689 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NORVA PY — Tecnología & Cuidado Personal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* ===== RESET & BASE ===== */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --negro:       #0D0D0D;
+      --blanco:      #FFFFFF;
+      --dorado:      #C9A84C;
+      --dorado-dim:  rgba(201,168,76,0.15);
+      --dorado-glow: rgba(201,168,76,0.35);
+      --gris:        #2D2D2D;
+      --gris-mid:    #1A1A1A;
+      --beige:       #F5F0E8;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--blanco);
+      color: var(--negro);
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* ===== HERO ===== */
+    .hero {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      padding: 0 5vw 0 6vw;
+      gap: 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 70% at 15% 50%, rgba(201,168,76,0.06) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 80% at 80% 50%, rgba(201,168,76,0.04) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* — Left column — */
+    .hero-left {
+      display: flex;
+      flex-direction: column;
+      gap: 2.2rem;
+      z-index: 1;
+    }
+
+    .hero-eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      font-size: 0.68rem;
+      font-weight: 500;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--dorado);
+      opacity: 0;
+      animation: fade-up 0.8s 0.2s ease forwards;
+    }
+
+    .hero-eyebrow::before {
+      content: '';
+      display: block;
+      width: 32px;
+      height: 1px;
+      background: var(--dorado);
+    }
+
+    .hero-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(3.2rem, 7vw, 6.5rem);
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      line-height: 1;
+      color: var(--negro);
+      opacity: 0;
+      animation: fade-up 0.8s 0.4s ease forwards;
+    }
+
+    .hero-logo .accent { color: var(--dorado); }
+
+    .hero-tagline {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1rem, 1.6vw, 1.35rem);
+      font-weight: 300;
+      font-style: italic;
+      color: #4A4A4A;
+      line-height: 1.75;
+      max-width: 380px;
+      padding-left: 1.2rem;
+      border-left: 2px solid var(--dorado);
+      opacity: 0;
+      animation: fade-up 0.8s 0.6s ease forwards;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.7rem;
+      align-self: flex-start;
+      background: var(--dorado);
+      color: var(--negro);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      padding: 1rem 2.6rem;
+      text-decoration: none;
+      border: 1px solid var(--dorado);
+      cursor: pointer;
+      transition: background 0.3s, color 0.3s, box-shadow 0.3s;
+      animation: fade-up 0.8s 0.8s ease both;
+    }
+
+    .btn-primary .arrow { transition: transform 0.3s ease; }
+
+    .btn-primary:hover {
+      background: transparent;
+      color: var(--dorado);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 36px var(--dorado-glow);
+    }
+
+    .btn-primary:hover .arrow { transform: translateX(5px); }
+
+    /* — Right column — */
+    .hero-right {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1;
+      opacity: 0;
+      animation: fade-in 1.2s 0.5s ease forwards;
+    }
+
+    /* — Esfera 3D — */
+    .sphere-wrap {
+      position: relative;
+      width: min(350px, 44vw);
+      height: min(350px, 44vw);
+    }
+    #sphere-canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* ===== VIDEO ===== */
+    .video-section {
+      padding: 7rem 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2.5rem;
+      background: var(--blanco);
+      position: relative;
+    }
+
+    .video-headline {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.6rem, 3.2vw, 2.8rem);
+      font-weight: 300;
+      font-style: italic;
+      color: var(--negro);
+      text-align: center;
+      letter-spacing: 0.04em;
+    }
+
+    .video-headline em {
+      color: var(--dorado);
+      font-style: italic;
+    }
+
+    .video-wrapper {
+      width: 100%;
+      max-width: 600px;
+      position: relative;
+      -webkit-mask-image: radial-gradient(ellipse 85% 85% at center, black 60%, transparent 100%);
+      mask-image: radial-gradient(ellipse 85% 85% at center, black 60%, transparent 100%);
+    }
+
+    .video-wrapper video {
+      width: 100%;
+      display: block;
+    }
+
+    /* Placeholder shown when video hasn't loaded / file missing */
+    .video-placeholder {
+      width: 100%;
+      min-height: 340px;
+      background: #EDE8DF;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .video-placeholder-icon {
+      width: 60px;
+      height: 60px;
+      border: 1px solid rgba(201,168,76,0.4);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .video-placeholder-icon::after {
+      content: '▶';
+      color: var(--dorado);
+      font-size: 1.2rem;
+      margin-left: 4px;
+    }
+
+    .video-placeholder p {
+      font-size: 0.8rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: rgba(0,0,0,0.38);
+    }
+
+    /* ===== TRUST CARDS ===== */
+    .trust-section {
+      padding: 5rem 5vw;
+      background: var(--blanco);
+    }
+
+    .trust-grid {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.6rem;
+    }
+
+    .trust-card {
+      background: var(--beige);
+      border: 1px solid rgba(201,168,76,0.28);
+      padding: 2.6rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    .trust-card:hover {
+      border-color: rgba(201,168,76,0.6);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.06);
+    }
+
+    .trust-icon {
+      font-size: 1.7rem;
+      line-height: 1;
+    }
+
+    .trust-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--negro);
+      letter-spacing: 0.02em;
+      line-height: 1.3;
+    }
+
+    .trust-body {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 300;
+      color: #4A4A4A;
+      line-height: 1.8;
+      letter-spacing: 0.01em;
+    }
+
+    /* ===== ABOUT ===== */
+    .about-section {
+      padding: 7rem 5vw;
+      background: var(--beige);
+      border-top: 1px solid rgba(201,168,76,0.22);
+      border-bottom: 1px solid rgba(201,168,76,0.22);
+    }
+
+    .about-inner {
+      max-width: 860px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 3.2rem;
+    }
+
+    .about-block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.4rem;
+    }
+
+    .about-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2.2rem, 4.5vw, 3.4rem);
+      font-weight: 600;
+      color: var(--negro);
+      letter-spacing: 0.02em;
+      line-height: 1.1;
+      text-align: center;
+    }
+
+    .about-divider {
+      width: 52px;
+      height: 1px;
+      background: var(--dorado);
+    }
+
+    .about-body {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.92rem;
+      font-weight: 300;
+      color: #4A4A4A;
+      line-height: 1.9;
+      letter-spacing: 0.02em;
+      text-align: center;
+      max-width: 680px;
+    }
+
+    .about-subtitle {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.3rem, 2.4vw, 1.85rem);
+      font-weight: 400;
+      font-style: italic;
+      color: var(--dorado);
+      text-align: center;
+      letter-spacing: 0.04em;
+    }
+
+    .about-rule {
+      display: flex;
+      align-items: center;
+      gap: 1.4rem;
+      width: 100%;
+    }
+
+    .about-rule::before,
+    .about-rule::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(201,168,76,0.18);
+    }
+
+    .about-rule-dot {
+      color: var(--dorado);
+      font-size: 0.55rem;
+      opacity: 0.7;
+    }
+
+    .about-pillars {
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      border: 1px solid rgba(201,168,76,0.14);
+      margin-top: 0.4rem;
+    }
+
+    .pillar {
+      padding: 2.6rem 1.8rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.9rem;
+      text-align: center;
+      position: relative;
+    }
+
+    .pillar + .pillar {
+      border-left: 1px solid rgba(201,168,76,0.14);
+    }
+
+    .pillar-icon {
+      font-size: 1.7rem;
+      line-height: 1;
+    }
+
+    .pillar-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--negro);
+      letter-spacing: 0.03em;
+      line-height: 1.3;
+    }
+
+    .pillar-desc {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 300;
+      color: #4A4A4A;
+      line-height: 1.75;
+      letter-spacing: 0.02em;
+    }
+
+    /* ===== PRODUCTS ===== */
+    .products-section {
+      padding: 6rem 5vw;
+      background: var(--blanco);
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+
+    .section-eyebrow {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.68rem;
+      font-weight: 500;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--dorado);
+      margin-bottom: 0.9rem;
+    }
+
+    .section-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      font-weight: 600;
+      color: var(--negro);
+      letter-spacing: 0.02em;
+      line-height: 1.1;
+    }
+
+    .section-rule {
+      width: 50px;
+      height: 1px;
+      background: var(--dorado);
+      margin: 1.4rem auto 0;
+    }
+
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+
+    .product-card {
+      background: var(--beige);
+      border: 1px solid rgba(201,168,76,0.22);
+      overflow: hidden;
+      transition: transform 0.36s ease, border-color 0.36s ease, box-shadow 0.36s ease;
+      cursor: pointer;
+    }
+
+    .product-card:hover {
+      transform: translateY(-8px);
+      border-color: rgba(201,168,76,0.6);
+      box-shadow: 0 24px 48px rgba(0,0,0,0.10), 0 0 24px rgba(201,168,76,0.14);
+    }
+
+    .product-img {
+      width: 100%;
+      aspect-ratio: 1;
+      overflow: hidden;
+      background: #EDE8DF;
+    }
+
+    .product-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.55s ease;
+      display: block;
+    }
+
+    .product-card:hover .product-img img {
+      transform: scale(1.06);
+    }
+
+    .product-info {
+      padding: 1.3rem 1.2rem 1.4rem;
+    }
+
+    .product-cat {
+      font-size: 0.62rem;
+      font-weight: 500;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--dorado);
+      margin-bottom: 0.45rem;
+    }
+
+    .product-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--negro);
+      line-height: 1.3;
+      margin-bottom: 0.65rem;
+    }
+
+    .product-price {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #4A4A4A;
+      margin-bottom: 1.1rem;
+    }
+
+    .product-price small {
+      font-size: 0.7rem;
+      font-weight: 300;
+      color: rgba(74,74,74,0.65);
+    }
+
+    .btn-buy {
+      display: block;
+      width: 100%;
+      text-align: center;
+      background: transparent;
+      border: 1px solid rgba(201,168,76,0.6);
+      color: var(--dorado);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      padding: 0.7rem;
+      text-decoration: none;
+      transition: background 0.28s, color 0.28s, border-color 0.28s;
+      cursor: pointer;
+    }
+
+    .btn-buy:hover {
+      background: var(--dorado);
+      color: var(--negro);
+      border-color: var(--dorado);
+    }
+
+    /* ===== MARQUEE ===== */
+    .marquee-section {
+      padding: 0;
+      overflow: hidden;
+      background: var(--beige);
+      border-top: 1px solid rgba(201,168,76,0.28);
+      border-bottom: 1px solid rgba(201,168,76,0.28);
+    }
+
+    .marquee-track {
+      display: flex;
+      width: max-content;
+      animation: marquee 35s linear infinite;
+    }
+
+    .marquee-track:hover { animation-play-state: paused; }
+
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+
+    .marquee-set {
+      display: flex;
+      align-items: center;
+      padding: 1.4rem 0;
+    }
+
+    .m-item {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1rem;
+      font-weight: 400;
+      letter-spacing: 0.12em;
+      color: var(--negro);
+      white-space: nowrap;
+      padding: 0 2.5rem;
+    }
+
+    .m-item .m-star { color: var(--dorado); }
+
+    /* ===== FOOTER ===== */
+    footer {
+      background: var(--negro);
+      border-top: 1px solid rgba(201,168,76,0.12);
+      padding: 5rem 5vw 3rem;
+    }
+
+    .footer-grid {
+      max-width: 1280px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1.4fr 1fr 1fr;
+      gap: 4rem;
+      padding-bottom: 3rem;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .footer-brand-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.8rem;
+      font-weight: 700;
+      color: var(--blanco);
+      line-height: 1;
+      letter-spacing: 0.02em;
+      margin-bottom: 0.3rem;
+    }
+
+    .footer-brand-sub {
+      font-size: 0.65rem;
+      font-weight: 500;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--dorado);
+      margin-bottom: 1.4rem;
+    }
+
+    .footer-brand p {
+      font-size: 0.82rem;
+      line-height: 1.8;
+      color: rgba(255,255,255,0.38);
+      max-width: 280px;
+    }
+
+    .footer-col h4 {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--dorado);
+      margin-bottom: 1.4rem;
+    }
+
+    .footer-col ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .footer-col li a {
+      font-size: 0.82rem;
+      color: rgba(255,255,255,0.4);
+      text-decoration: none;
+      transition: color 0.22s;
+      letter-spacing: 0.02em;
+    }
+
+    .footer-col li a:hover { color: var(--beige); }
+
+    .footer-contact-email {
+      font-size: 0.82rem;
+      color: rgba(255,255,255,0.4);
+      line-height: 1.7;
+    }
+
+    .footer-contact-email a {
+      color: var(--beige);
+      text-decoration: none;
+      transition: color 0.22s;
+    }
+
+    .footer-contact-email a:hover { color: var(--dorado); }
+
+    .footer-bottom {
+      max-width: 1280px;
+      margin: 2.5rem auto 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .footer-copy {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.92rem;
+      font-style: italic;
+      color: rgba(255,255,255,0.28);
+      letter-spacing: 0.02em;
+    }
+
+    .footer-copy .copy-mark { color: rgba(201,168,76,0.55); }
+
+    .footer-tagline {
+      font-size: 0.65rem;
+      font-weight: 500;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: rgba(201,168,76,0.4);
+    }
+
+    /* ===== WHEEL OVERLAY ===== */
+    #sphere-wrap { cursor: pointer; }
+
+    .gallery-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 900;
+      background: rgba(0,0,0,0.88);
+    }
+    .gallery-overlay.active { display: block; animation: fade-in 0.35s ease; }
+
+    .gallery-close {
+      position: fixed;
+      top: 1.4rem;
+      right: 1.6rem;
+      background: none;
+      border: none;
+      color: var(--dorado);
+      font-size: 2.1rem;
+      cursor: pointer;
+      line-height: 1;
+      z-index: 970;
+      transition: opacity 0.2s;
+    }
+    .gallery-close:hover { opacity: 0.65; }
+
+    /* ===== WHEEL PHOTOS (created dynamically) ===== */
+    .wheel-photo {
+      position: fixed;
+      border-radius: 50%;
+      border: 2.5px solid var(--dorado);
+      overflow: hidden;
+      cursor: pointer;
+      pointer-events: none;
+      z-index: 950;
+      box-shadow: 0 0 14px rgba(201,168,76,0.22);
+      will-change: transform;
+    }
+    .wheel-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      pointer-events: none;
+    }
+    .wheel-photo.ready:hover {
+      box-shadow: 0 0 28px rgba(201,168,76,0.65);
+    }
+
+    /* ===== LIGHTBOX ===== */
+    .lightbox-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background: rgba(0,0,0,0.95);
+      align-items: center;
+      justify-content: center;
+    }
+    .lightbox-overlay.active { display: flex; animation: fade-in 0.22s ease; }
+
+    .lightbox-close {
+      position: absolute;
+      top: 1.2rem;
+      right: 1.4rem;
+      background: none;
+      border: none;
+      color: var(--dorado);
+      font-size: 2.2rem;
+      cursor: pointer;
+      line-height: 1;
+      transition: opacity 0.2s;
+      z-index: 1;
+    }
+    .lightbox-close:hover { opacity: 0.65; }
+
+    #lightbox-img {
+      max-width: 86vw;
+      max-height: 84vh;
+      object-fit: contain;
+      border: 1.5px solid rgba(201,168,76,0.35);
+      animation: scale-in 0.28s ease;
+      display: block;
+    }
+
+    .lightbox-prev,
+    .lightbox-next {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: 1px solid rgba(201,168,76,0.35);
+      color: var(--dorado);
+      font-size: 2.2rem;
+      line-height: 1;
+      padding: 0.45rem 0.85rem;
+      cursor: pointer;
+      z-index: 1;
+      transition: background 0.2s, border-color 0.2s;
+      user-select: none;
+    }
+    .lightbox-prev { left: 1rem; }
+    .lightbox-next { right: 1rem; }
+    .lightbox-prev:hover,
+    .lightbox-next:hover {
+      background: rgba(201,168,76,0.12);
+      border-color: rgba(201,168,76,0.7);
+    }
+
+    .product-img img { cursor: pointer; }
+
+    /* ===== ANIMATIONS ===== */
+    @keyframes fade-up {
+      from { opacity: 0; transform: translateY(22px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fade-in {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    @keyframes scale-in {
+      from { opacity: 0; transform: scale(0.88); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes wiggle {
+      0%,  100% { transform: rotate(0deg); }
+      15%        { transform: rotate(-8deg); }
+      30%        { transform: rotate(8deg); }
+      45%        { transform: rotate(-6deg); }
+      60%        { transform: rotate(6deg); }
+      75%        { transform: rotate(-3deg); }
+      90%        { transform: rotate(3deg); }
+    }
+    .btn-primary.wiggle-active { animation: wiggle 1s ease both; }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 1100px) {
+      .products-grid { grid-template-columns: repeat(2, 1fr); }
+      .sphere-wrap { width: min(320px, 42vw); height: min(320px, 42vw); }
+    }
+
+    @media (max-width: 800px) {
+      .hero {
+        grid-template-columns: 1fr;
+        min-height: auto;
+        padding: 5rem 6vw 4rem;
+        gap: 3.5rem;
+        text-align: center;
+      }
+
+      .hero-eyebrow { justify-content: center; }
+
+      .hero-tagline {
+        border-left: none;
+        border-top: 1px solid rgba(201,168,76,0.5);
+        padding-left: 0;
+        padding-top: 1.2rem;
+        margin: 0 auto;
+      }
+
+      .btn-primary { align-self: center; }
+
+      .hero-right { justify-content: center; }
+
+      .sphere-wrap { width: min(320px, 80vw); height: min(320px, 80vw); }
+
+      .trust-grid { grid-template-columns: 1fr; }
+      .about-pillars { grid-template-columns: 1fr; }
+      .pillar + .pillar { border-left: none; border-top: 1px solid rgba(201,168,76,0.14); }
+
+      .footer-grid {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+      }
+
+      .footer-bottom {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+      }
+
+      .section-header { margin-bottom: 2.5rem; }
+    }
+
+    @media (max-width: 560px) {
+      .products-grid { grid-template-columns: 1fr; }
+      .sphere-wrap { width: min(280px, 86vw); height: min(280px, 86vw); }
+    }
+
+    @media (max-width: 480px) {
+      /* Hero */
+      .hero {
+        padding: 3rem 5vw 2.5rem;
+        gap: 2rem;
+      }
+      .hero-logo {
+        font-size: clamp(2.6rem, 12vw, 3.2rem);
+      }
+      .hero-tagline {
+        font-size: 0.95rem;
+        max-width: 100%;
+      }
+      .btn-primary {
+        padding: 0.85rem 2rem;
+        font-size: 0.72rem;
+      }
+      .sphere-wrap {
+        width: min(260px, 82vw);
+        height: min(260px, 82vw);
+      }
+
+      /* Video */
+      .video-section { padding: 3rem 1.2rem; gap: 2rem; }
+
+      /* Trust cards */
+      .trust-section { padding: 2.5rem 4vw; }
+      .trust-card    { padding: 1.8rem 1.4rem; gap: 0.8rem; }
+      .trust-title   { font-size: 1.05rem; }
+
+      /* About */
+      .about-section  { padding: 3rem 5vw; }
+      .about-inner    { gap: 2rem; }
+      .about-title    { font-size: clamp(1.8rem, 8vw, 2.4rem); }
+      .about-body     { font-size: 0.88rem; }
+      .about-subtitle { font-size: clamp(1.1rem, 5vw, 1.4rem); }
+      .pillar         { padding: 1.8rem 1rem; }
+
+      /* Products */
+      .products-section { padding: 3rem 4vw; }
+      .section-header   { margin-bottom: 1.8rem; }
+      .section-title    { font-size: clamp(1.6rem, 8vw, 2.2rem); }
+      .product-info     { padding: 1rem 1rem 1.1rem; }
+
+      /* Marquee */
+      .m-item { font-size: 0.88rem; padding: 0 1.5rem; }
+
+      /* Footer */
+      footer        { padding: 3rem 5vw 2rem; }
+      .footer-grid  { gap: 1.8rem; }
+      .footer-brand-logo { font-size: 2.2rem; }
+      .footer-brand p    { font-size: 0.78rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- =================== HERO =================== -->
+  <section class="hero">
+
+    <div class="hero-left">
+      <div class="hero-eyebrow">Paraguay &nbsp;·&nbsp; Tecnología &nbsp;·&nbsp; Belleza</div>
+
+      <div class="hero-logo">
+        NORVA <span class="accent">PY</span>
+      </div>
+
+      <p class="hero-tagline">
+        Tu destino premium de tecnología y cuidado personal.<br>
+        Envíos a todo Paraguay.
+      </p>
+
+      <a href="https://norva-py.zappy.com.py/" target="_blank" rel="noopener noreferrer" class="btn-primary" id="btn-ver-productos">
+        Ver productos <span class="arrow">→</span>
+      </a>
+    </div>
+
+    <div class="hero-right">
+      <div class="sphere-wrap" id="sphere-wrap">
+        <canvas id="sphere-canvas"></canvas>
+      </div>
+    </div>
+  </section>
+
+  <!-- =================== VIDEO =================== -->
+  <section class="video-section">
+    <p class="video-headline">Descubrí lo que <em>Norva</em> tiene para vos.</p>
+
+    <div class="video-wrapper" id="videoWrapper">
+      <video id="heroVideo" autoplay muted loop playsinline preload="auto">
+        <source src="assets/video.mp4" type="video/mp4">
+      </video>
+      <div class="video-placeholder" id="videoPlaceholder">
+        <div class="video-placeholder-icon"></div>
+        <p>video.mp4 — /assets</p>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- =================== TRUST CARDS =================== -->
+  <section class="trust-section">
+    <div class="trust-grid">
+
+      <div class="trust-card">
+        <span class="trust-icon">🛍️</span>
+        <h3 class="trust-title">Nuevos productos cada semana</h3>
+        <p class="trust-body">Sumamos productos frescos todos los lunes. Siempre hay algo nuevo para descubrir en Norva PY.</p>
+      </div>
+
+      <div class="trust-card">
+        <span class="trust-icon" style="color:var(--dorado);font-family:'Cormorant Garamond',serif;font-size:2rem;line-height:1;">✦</span>
+        <h3 class="trust-title">Descuentos los fines de semana</h3>
+        <p class="trust-body">Cada sábado y domingo activamos promociones especiales. Seguinos en redes para no perderte ninguna.</p>
+      </div>
+
+      <div class="trust-card">
+        <span class="trust-icon">📦</span>
+        <h3 class="trust-title">Tu pedido siempre monitoreado</h3>
+        <p class="trust-body">Cada compra tiene seguimiento en tiempo real. Tu producto sale, viaja y llega seguro hasta vos.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =================== ABOUT =================== -->
+  <section class="about-section" id="sobre-nosotros">
+    <div class="about-inner">
+
+      <div class="about-block">
+        <h2 class="about-title">¿Qué es Norva PY?</h2>
+        <div class="about-divider"></div>
+        <p class="about-body">Norva PY es una tienda online paraguaya especializada en productos de tecnología y cuidado personal. Nacimos con una misión simple: acercarte lo mejor del mundo a tu puerta, sin complicaciones y con la confianza de una marca local.</p>
+      </div>
+
+      <div class="about-rule"><span class="about-rule-dot">✦</span></div>
+
+      <div class="about-block">
+        <p class="about-subtitle">¿Qué vendemos?</p>
+        <p class="about-body">Encontrás desde gadgets tecnológicos innovadores hasta productos de belleza y cuidado personal de calidad. Cada producto en nuestra tienda es cuidadosamente seleccionado pensando en tu bienestar y estilo de vida moderno.</p>
+      </div>
+
+      <div class="about-rule"><span class="about-rule-dot">✦</span></div>
+
+      <div class="about-block">
+        <p class="about-subtitle">¿Por qué elegirnos?</p>
+        <div class="about-pillars">
+          <div class="pillar">
+            <span class="pillar-icon">🚚</span>
+            <p class="pillar-name">Envíos a todo Paraguay</p>
+            <p class="pillar-desc">Llegamos a cada rincón del país, rápido y seguro.</p>
+          </div>
+          <div class="pillar">
+            <span class="pillar-icon" style="color:var(--dorado);font-family:'Cormorant Garamond',serif;font-size:2rem;">✦</span>
+            <p class="pillar-name">Productos seleccionados</p>
+            <p class="pillar-desc">Solo lo mejor pasa por nuestro filtro de calidad.</p>
+          </div>
+          <div class="pillar">
+            <span class="pillar-icon">🇵🇾</span>
+            <p class="pillar-name">Marca 100% paraguaya</p>
+            <p class="pillar-desc">Somos locales, hablamos tu idioma y entendemos lo que necesitás.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =================== PRODUCTS =================== -->
+  <section class="products-section" id="productos">
+    <div class="section-header">
+      <p class="section-eyebrow">Colección</p>
+      <h2 class="section-title">Productos Destacados</h2>
+      <div class="section-rule"></div>
+    </div>
+
+    <div class="products-grid">
+
+      <div class="product-card">
+        <div class="product-img">
+          <img src="assets/fotos/foto-01.jpeg" alt="Producto Norva PY" loading="lazy">
+        </div>
+        <div class="product-info">
+          <p class="product-cat">Tecnología</p>
+          <h3 class="product-name">Auriculares Bluetooth Pro</h3>
+          <a href="#" class="btn-buy">Comprar</a>
+        </div>
+      </div>
+
+      <div class="product-card">
+        <div class="product-img">
+          <img src="assets/fotos/foto-02.jpeg" alt="Producto Norva PY" loading="lazy">
+        </div>
+        <div class="product-info">
+          <p class="product-cat">Belleza</p>
+          <h3 class="product-name">Crema Facial Premium</h3>
+          <a href="#" class="btn-buy">Comprar</a>
+        </div>
+      </div>
+
+      <div class="product-card">
+        <div class="product-img">
+          <img src="assets/fotos/foto-03.jpeg" alt="Producto Norva PY" loading="lazy">
+        </div>
+        <div class="product-info">
+          <p class="product-cat">Tecnología</p>
+          <h3 class="product-name">Smartwatch Elite Series</h3>
+          <a href="#" class="btn-buy">Comprar</a>
+        </div>
+      </div>
+
+      <div class="product-card">
+        <div class="product-img">
+          <img src="assets/fotos/foto-04.jpeg" alt="Producto Norva PY" loading="lazy">
+        </div>
+        <div class="product-info">
+          <p class="product-cat">Cuidado Personal</p>
+          <h3 class="product-name">Suero Vitamina C</h3>
+          <a href="#" class="btn-buy">Comprar</a>
+        </div>
+      </div>
+
+      <div class="product-card">
+        <div class="product-img">
+          <img src="assets/fotos/foto-05.jpeg" alt="Producto Norva PY" loading="lazy">
+        </div>
+        <div class="product-info">
+          <p class="product-cat">Cuidado Personal</p>
+          <h3 class="product-name">Masajeador Facial LED</h3>
+          <a href="#" class="btn-buy">Comprar</a>
+        </div>
+      </div>
+
+      <div class="product-card">
+        <div class="product-img">
+          <img src="assets/fotos/foto-06.jpeg" alt="Producto Norva PY" loading="lazy">
+        </div>
+        <div class="product-info">
+          <p class="product-cat">Tecnología</p>
+          <h3 class="product-name">Tablet Android 10"</h3>
+          <a href="#" class="btn-buy">Comprar</a>
+        </div>
+      </div>
+
+      <div class="product-card">
+        <div class="product-img">
+          <img src="assets/fotos/foto-07.jpeg" alt="Producto Norva PY" loading="lazy">
+        </div>
+        <div class="product-info">
+          <p class="product-cat">Belleza</p>
+          <h3 class="product-name">Set Cuidado Capilar</h3>
+          <a href="#" class="btn-buy">Comprar</a>
+        </div>
+      </div>
+
+      <div class="product-card">
+        <div class="product-img">
+          <img src="assets/fotos/foto-08.jpeg" alt="Producto Norva PY" loading="lazy">
+        </div>
+        <div class="product-info">
+          <p class="product-cat">Tecnología</p>
+          <h3 class="product-name">Fitness Tracker Pro</h3>
+          <a href="#" class="btn-buy">Comprar</a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =================== MARQUEE =================== -->
+  <div class="marquee-section">
+    <div class="marquee-track">
+      <!-- First copy -->
+      <div class="marquee-set">
+        <span class="m-item"><span class="m-star">✦</span> Envíos a todo Paraguay</span>
+        <span class="m-item"><span class="m-star">✦</span> Calidad Garantizada</span>
+        <span class="m-item"><span class="m-star">✦</span> Tecnología · Belleza · Cuidado Personal</span>
+        <span class="m-item"><span class="m-star">✦</span> Norva PY</span>
+        <span class="m-item"><span class="m-star">✦</span> Envíos a todo Paraguay</span>
+        <span class="m-item"><span class="m-star">✦</span> Calidad Garantizada</span>
+        <span class="m-item"><span class="m-star">✦</span> Tecnología · Belleza · Cuidado Personal</span>
+        <span class="m-item"><span class="m-star">✦</span> Norva PY</span>
+      </div>
+      <!-- Duplicate for seamless loop -->
+      <div class="marquee-set" aria-hidden="true">
+        <span class="m-item"><span class="m-star">✦</span> Envíos a todo Paraguay</span>
+        <span class="m-item"><span class="m-star">✦</span> Calidad Garantizada</span>
+        <span class="m-item"><span class="m-star">✦</span> Tecnología · Belleza · Cuidado Personal</span>
+        <span class="m-item"><span class="m-star">✦</span> Norva PY</span>
+        <span class="m-item"><span class="m-star">✦</span> Envíos a todo Paraguay</span>
+        <span class="m-item"><span class="m-star">✦</span> Calidad Garantizada</span>
+        <span class="m-item"><span class="m-star">✦</span> Tecnología · Belleza · Cuidado Personal</span>
+        <span class="m-item"><span class="m-star">✦</span> Norva PY</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- =================== FOOTER =================== -->
+  <footer>
+    <div class="footer-grid">
+
+      <div class="footer-brand">
+        <div class="footer-brand-logo">NR</div>
+        <div class="footer-brand-sub">NORVA PY</div>
+        <p>Selección premium de tecnología, belleza y cuidado personal. Llevamos el mundo a cada rincón de Paraguay.</p>
+      </div>
+
+      <div class="footer-col">
+        <h4>Navegación</h4>
+        <ul>
+          <li><a href="#">Inicio</a></li>
+          <li><a href="#productos">Productos</a></li>
+          <li><a href="#sobre-nosotros">Sobre Nosotros</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Contacto</h4>
+        <div class="footer-contact-email">
+          <p>¿Consultas? Escribinos:</p>
+          <br>
+          <a href="mailto:storenorvapy@gmail.com">storenorvapy@gmail.com</a>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="footer-bottom">
+      <p class="footer-copy">
+        Norva PY <span class="copy-mark">©</span> 2026 — Hecho en Paraguay
+      </p>
+      <span class="footer-tagline">Tecnología · Belleza · Cuidado Personal</span>
+    </div>
+  </footer>
+
+  <!-- =================== WHEEL OVERLAY =================== -->
+  <div class="gallery-overlay" id="gallery-overlay">
+    <button class="gallery-close" id="gallery-close" aria-label="Cerrar menú">✕</button>
+  </div>
+
+  <!-- =================== LIGHTBOX =================== -->
+  <div class="lightbox-overlay" id="lightbox-overlay">
+    <button class="lightbox-close" id="lightbox-close" aria-label="Cerrar">✕</button>
+    <button class="lightbox-prev" id="lightbox-prev" aria-label="Anterior">&#8249;</button>
+    <img id="lightbox-img" src="" alt="Producto Norva PY">
+    <button class="lightbox-next" id="lightbox-next" aria-label="Siguiente">&#8250;</button>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script>
+    // ── Smooth scroll ──
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', e => {
+        const target = document.querySelector(a.getAttribute('href'));
+        if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth' }); }
+      });
+    });
+
+    // ── Video fallback ──
+    (function () {
+      const video = document.getElementById('heroVideo');
+      const placeholder = document.getElementById('videoPlaceholder');
+      if (!video) return;
+
+      function showPlaceholder() {
+        video.style.display = 'none';
+        placeholder.style.display = 'flex';
+      }
+
+      video.addEventListener('error', showPlaceholder);
+
+      // If after 3 s the video still has no data, show placeholder
+      setTimeout(() => {
+        if (video.readyState === 0) showPlaceholder();
+      }, 3000);
+    })();
+
+    // ── Esfera 3D (Three.js) ──
+    (function () {
+      if (typeof THREE === 'undefined') return;
+      var canvas = document.getElementById('sphere-canvas');
+      var wrap   = document.getElementById('sphere-wrap');
+      if (!canvas || !wrap) return;
+
+      var renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+      renderer.setClearColor(0x000000, 0);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+      var scene  = new THREE.Scene();
+      var camera = new THREE.PerspectiveCamera(48, 1, 0.1, 100);
+      camera.position.z = 5.8;
+
+      var group = new THREE.Group();
+      scene.add(group);
+
+      var URLS = [
+        'assets/fotos/foto-01.jpeg',
+        'assets/fotos/esfera-01.jpeg',
+        'assets/fotos/foto-02.jpeg',
+        'assets/fotos/esfera-02.jpeg',
+        'assets/fotos/foto-03.jpeg',
+        'assets/fotos/esfera-03.jpeg',
+        'assets/fotos/foto-04.jpeg',
+        'assets/fotos/esfera-04.jpeg',
+        'assets/fotos/foto-05.jpeg',
+        'assets/fotos/esfera-05.jpeg',
+        'assets/fotos/foto-06.jpeg',
+        'assets/fotos/esfera-06.jpeg',
+        'assets/fotos/foto-07.jpeg',
+        'assets/fotos/esfera-07.jpeg',
+        'assets/fotos/foto-08.jpeg',
+        'assets/fotos/foto-09.jpeg',
+        'assets/fotos/foto-10.jpeg',
+        'assets/fotos/foto-11.jpeg',
+        'assets/fotos/foto-12.jpeg',
+        'assets/fotos/foto-13.jpeg',
+        'assets/fotos/foto-14.jpeg'
+      ];
+
+      var N = URLS.length;
+      var R = 1.54;
+      var goldenAngle = Math.PI * (3 - Math.sqrt(5));
+      var SZ = 256;
+      var sprites = [];
+
+      URLS.forEach(function (url, i) {
+        var cvs = document.createElement('canvas');
+        cvs.width = SZ; cvs.height = SZ;
+        var ctx = cvs.getContext('2d');
+        var tex = new THREE.CanvasTexture(cvs);
+
+        function draw(imgEl) {
+          var r = SZ / 2 - 12;
+          ctx.clearRect(0, 0, SZ, SZ);
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(SZ / 2, SZ / 2, r, 0, Math.PI * 2);
+          ctx.closePath();
+          ctx.clip();
+          if (imgEl) {
+            ctx.drawImage(imgEl, 0, 0, SZ, SZ);
+          } else {
+            ctx.fillStyle = '#1e1e1e';
+            ctx.fillRect(0, 0, SZ, SZ);
+          }
+          ctx.restore();
+          // Borde dorado principal
+          ctx.beginPath();
+          ctx.arc(SZ / 2, SZ / 2, r, 0, Math.PI * 2);
+          ctx.strokeStyle = '#C9A84C';
+          ctx.lineWidth = 9;
+          ctx.stroke();
+          // Halo exterior sutil
+          ctx.beginPath();
+          ctx.arc(SZ / 2, SZ / 2, r + 7, 0, Math.PI * 2);
+          ctx.strokeStyle = 'rgba(201,168,76,0.20)';
+          ctx.lineWidth = 5;
+          ctx.stroke();
+          tex.needsUpdate = true;
+        }
+
+        draw(null);
+
+        var mat = new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false });
+        var spr = new THREE.Sprite(mat);
+
+        // Distribución uniforme en la esfera (Fibonacci)
+        var t   = i / (N - 1);
+        var y   = 1 - t * 2;
+        var rr  = Math.sqrt(Math.max(0, 1 - y * y));
+        var phi = goldenAngle * i;
+        spr.position.set(R * rr * Math.cos(phi), R * y, R * rr * Math.sin(phi));
+        spr.scale.set(0.60, 0.60, 1);
+        group.add(spr);
+        sprites.push(spr);
+
+        var img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload  = function () { draw(img); };
+        img.onerror = function () { draw(null); };
+        img.src = url;
+      });
+
+      function resize() {
+        var w = wrap.clientWidth;
+        var h = wrap.clientHeight;
+        renderer.setSize(w, h, false);
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+      }
+      resize();
+      window.addEventListener('resize', resize);
+
+      // Loop de animación
+      var isRotating = true;
+      var tmp  = new THREE.Vector3();
+      var tmp2 = new THREE.Vector3();
+
+      function animate() {
+        requestAnimationFrame(animate);
+        if (isRotating) {
+          group.rotation.y += 0.005;
+          group.rotation.x += 0.0012;
+        }
+
+        for (var j = 0; j < sprites.length; j++) {
+          sprites[j].getWorldPosition(tmp);
+          var depth = (tmp.z / R + 1) * 0.5;
+          var s = 0.34 + depth * 0.42;
+          sprites[j].scale.set(s, s, 1);
+          sprites[j].material.opacity = 0.22 + depth * 0.78;
+        }
+
+        renderer.render(scene, camera);
+      }
+      animate();
+
+      window._norva = {
+        pause:  function () { isRotating = false; },
+        resume: function () { isRotating = true;  },
+        getPositions: function () {
+          renderer.render(scene, camera);
+          var rect = wrap.getBoundingClientRect();
+          var w = rect.width, h = rect.height;
+          return sprites.map(function (spr) {
+            tmp2.setFromMatrixPosition(spr.matrixWorld);
+            tmp2.project(camera);
+            return {
+              x: (tmp2.x + 1) / 2 * w + rect.left,
+              y: (-tmp2.y + 1) / 2 * h + rect.top
+            };
+          });
+        }
+      };
+    })();
+
+    // ── Wheel + Lightbox ──
+    (function () {
+      var FOTOS = [
+        'assets/fotos/foto-01.jpeg', 'assets/fotos/foto-02.jpeg',
+        'assets/fotos/foto-03.jpeg', 'assets/fotos/foto-04.jpeg',
+        'assets/fotos/foto-05.jpeg', 'assets/fotos/foto-06.jpeg',
+        'assets/fotos/foto-07.jpeg', 'assets/fotos/foto-08.jpeg',
+        'assets/fotos/foto-09.jpeg', 'assets/fotos/foto-10.jpeg',
+        'assets/fotos/foto-11.jpeg', 'assets/fotos/foto-12.jpeg',
+        'assets/fotos/foto-13.jpeg', 'assets/fotos/foto-14.jpeg',
+        'assets/fotos/esfera-01.jpeg', 'assets/fotos/esfera-02.jpeg',
+        'assets/fotos/esfera-03.jpeg', 'assets/fotos/esfera-04.jpeg',
+        'assets/fotos/esfera-05.jpeg', 'assets/fotos/esfera-06.jpeg',
+        'assets/fotos/esfera-07.jpeg'
+      ];
+
+      var galleryOverlay  = document.getElementById('gallery-overlay');
+      var galleryClose    = document.getElementById('gallery-close');
+      var lightboxOverlay = document.getElementById('lightbox-overlay');
+      var lightboxImg     = document.getElementById('lightbox-img');
+      var lightboxClose   = document.getElementById('lightbox-close');
+      var lightboxPrev    = document.getElementById('lightbox-prev');
+      var lightboxNext    = document.getElementById('lightbox-next');
+      var sphereWrap      = document.getElementById('sphere-wrap');
+      var sphereCanvas    = document.getElementById('sphere-canvas');
+
+      var wheelEls = [];
+      var isOpen   = false;
+      var currentIdx = -1;
+
+      // ── Cálculo de posiciones en rueda ──
+      function getWheelTargets() {
+        var N    = FOTOS.length;
+        var vmin = Math.min(window.innerWidth, window.innerHeight);
+        var size = Math.min(Math.max(vmin * 0.11, 44), 84);
+        var r    = Math.min((N * (size + 8)) / (2 * Math.PI), vmin * 0.41);
+        var cx   = window.innerWidth  / 2;
+        var cy   = window.innerHeight / 2;
+        return FOTOS.map(function (_, i) {
+          var a = (2 * Math.PI / N) * i - Math.PI / 2;
+          return { x: cx + r * Math.cos(a), y: cy + r * Math.sin(a), size: size };
+        });
+      }
+
+      // ── Abrir wheel ──
+      function openWheel() {
+        if (isOpen) return;
+        isOpen = true;
+
+        var norva = window._norva;
+        if (!norva) return;
+
+        norva.pause();
+        var fromPos = norva.getPositions();
+        var toPos   = getWheelTargets();
+        var sz      = toPos[0].size;
+
+        // Fondo y botón de cierre
+        galleryOverlay.classList.add('active');
+
+        // Fade out esfera para que parezca que salen de ella
+        sphereCanvas.style.transition = 'opacity 0.4s ease';
+        sphereCanvas.style.opacity    = '0';
+
+        // Crear elementos DOM en las posiciones de la esfera
+        FOTOS.forEach(function (src, i) {
+          var el  = document.createElement('div');
+          el.className = 'wheel-photo';
+          el.style.width  = sz + 'px';
+          el.style.height = sz + 'px';
+
+          var img = document.createElement('img');
+          img.src = src;
+          img.alt = 'Norva PY';
+          el.appendChild(img);
+
+          // left/top = destino en rueda; transform desplaza al origen en esfera
+          el.style.left = toPos[i].x + 'px';
+          el.style.top  = toPos[i].y + 'px';
+          var dx = fromPos[i] ? fromPos[i].x - toPos[i].x : 0;
+          var dy = fromPos[i] ? fromPos[i].y - toPos[i].y : 0;
+          el.style.transform = 'translate(calc(-50% + ' + dx + 'px), calc(-50% + ' + dy + 'px)) scale(0.55)';
+
+          document.body.appendChild(el);
+          wheelEls.push(el);
+        });
+
+        // Animar hacia la rueda (doble rAF para forzar paint)
+        requestAnimationFrame(function () {
+          requestAnimationFrame(function () {
+            wheelEls.forEach(function (el, i) {
+              el.style.transition = 'transform 0.58s cubic-bezier(0.34,1.14,0.64,1)';
+              el.style.transitionDelay = (i * 14) + 'ms';
+              el.style.transform = 'translate(-50%, -50%) scale(1)';
+            });
+
+            // Habilitar clicks tras la animación
+            var delay = FOTOS.length * 14 + 620;
+            setTimeout(function () {
+              wheelEls.forEach(function (el, i) {
+                el.style.transitionDelay = '';
+                el.style.pointerEvents  = 'auto';
+                el.classList.add('ready');
+                el.addEventListener('click', function (e) {
+                  e.stopPropagation();
+                  openLightbox(i);
+                });
+              });
+            }, delay);
+          });
+        });
+      }
+
+      // ── Cerrar wheel ──
+      function closeWheel() {
+        if (!isOpen) return;
+        isOpen = false;
+
+        var norva    = window._norva;
+        var spherePos = norva ? norva.getPositions() : [];
+
+        // Deshabilitar clicks
+        wheelEls.forEach(function (el) {
+          el.style.pointerEvents = 'none';
+          el.classList.remove('ready');
+        });
+
+        // Animar de regreso a la esfera
+        wheelEls.forEach(function (el, i) {
+          var wx = parseFloat(el.style.left);
+          var wy = parseFloat(el.style.top);
+          var dx = spherePos[i] ? spherePos[i].x - wx : 0;
+          var dy = spherePos[i] ? spherePos[i].y - wy : 0;
+          el.style.transition      = 'transform 0.5s cubic-bezier(0.36,0,0.66,0)';
+          el.style.transitionDelay = (i * 12) + 'ms';
+          el.style.transform = 'translate(calc(-50% + ' + dx + 'px), calc(-50% + ' + dy + 'px)) scale(0.4)';
+        });
+
+        var cleanupDelay = 500 + FOTOS.length * 12 + 100;
+        setTimeout(function () {
+          wheelEls.forEach(function (el) { el.remove(); });
+          wheelEls = [];
+          galleryOverlay.classList.remove('active');
+          // Fade in esfera y reanudar rotación
+          sphereCanvas.style.opacity = '1';
+          if (norva) norva.resume();
+        }, cleanupDelay);
+      }
+
+      // ── Lightbox ──
+      function openLightbox(idx) {
+        currentIdx = idx;
+        lightboxImg.src = FOTOS[idx];
+        lightboxOverlay.classList.add('active');
+      }
+      function closeLightbox() {
+        lightboxOverlay.classList.remove('active');
+      }
+      function showPrev() {
+        if (currentIdx < 0) return;
+        currentIdx = (currentIdx - 1 + FOTOS.length) % FOTOS.length;
+        lightboxImg.src = FOTOS[currentIdx];
+      }
+      function showNext() {
+        if (currentIdx < 0) return;
+        currentIdx = (currentIdx + 1) % FOTOS.length;
+        lightboxImg.src = FOTOS[currentIdx];
+      }
+
+      // ── Eventos ──
+      sphereWrap.addEventListener('click', openWheel);
+
+      galleryClose.addEventListener('click', closeWheel);
+      galleryOverlay.addEventListener('click', function (e) {
+        if (e.target === galleryOverlay) closeWheel();
+      });
+
+      lightboxClose.addEventListener('click', closeLightbox);
+      lightboxPrev.addEventListener('click', function (e) { e.stopPropagation(); showPrev(); });
+      lightboxNext.addEventListener('click', function (e) { e.stopPropagation(); showNext(); });
+      lightboxOverlay.addEventListener('click', function (e) {
+        if (e.target === lightboxOverlay) closeLightbox();
+      });
+
+      // Swipe en móvil (lightbox)
+      var swipeStartX = 0;
+      lightboxOverlay.addEventListener('touchstart', function (e) {
+        swipeStartX = e.touches[0].clientX;
+      }, { passive: true });
+      lightboxOverlay.addEventListener('touchend', function (e) {
+        var dx = e.changedTouches[0].clientX - swipeStartX;
+        if (Math.abs(dx) > 48) { dx < 0 ? showNext() : showPrev(); }
+      }, { passive: true });
+
+      // Lightbox desde cards de productos
+      document.querySelectorAll('.product-img img').forEach(function (img, i) {
+        img.addEventListener('click', function () {
+          currentIdx = -1;
+          lightboxImg.src = img.src;
+          lightboxOverlay.classList.add('active');
+        });
+      });
+
+      // Teclado
+      document.addEventListener('keydown', function (e) {
+        if (lightboxOverlay.classList.contains('active')) {
+          if (e.key === 'Escape')       closeLightbox();
+          else if (e.key === 'ArrowLeft')  showPrev();
+          else if (e.key === 'ArrowRight') showNext();
+        } else if (isOpen) {
+          if (e.key === 'Escape') closeWheel();
+        }
+      });
+    })();
+
+    // ── Wiggle en "Ver productos" al clickear "Comprar" ──
+    (function () {
+      document.querySelectorAll('.btn-buy').forEach(function (btn) {
+        btn.addEventListener('click', function (e) {
+          e.preventDefault();
+          window.open('https://norva-py.zappy.com.py/', '_blank');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          setTimeout(function () {
+            var el = document.getElementById('btn-ver-productos');
+            if (el) el.classList.add('wiggle-active');
+          }, 800);
+          setTimeout(function () {
+            var el = document.getElementById('btn-ver-productos');
+            if (el) el.classList.remove('wiggle-active');
+          }, 1800);
+        });
+      });
+    })();
+
+    // ── Scroll-reveal for product cards ──
+    (function () {
+      if (!('IntersectionObserver' in window)) return;
+      const cards = document.querySelectorAll('.product-card');
+      cards.forEach((c, i) => {
+        c.style.opacity = '0';
+        c.style.transform = 'translateY(24px)';
+        c.style.transition = `opacity 0.55s ${i * 0.07}s ease, transform 0.55s ${i * 0.07}s ease`;
+      });
+      const obs = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            e.target.style.opacity = '1';
+            e.target.style.transform = 'translateY(0)';
+            obs.unobserve(e.target);
+          }
+        });
+      }, { threshold: 0.12 });
+      cards.forEach(c => obs.observe(c));
+    })();
+  </script>
+
+</body>
+</html>
