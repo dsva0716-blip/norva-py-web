@@ -496,23 +496,6 @@
       padding: 1.3rem 1.2rem 1.4rem;
     }
 
-    .product-cat {
-      font-size: 0.62rem;
-      font-weight: 500;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      color: var(--dorado);
-      margin-bottom: 0.45rem;
-    }
-
-    .product-name {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.15rem;
-      font-weight: 600;
-      color: var(--negro);
-      line-height: 1.3;
-      margin-bottom: 0.65rem;
-    }
 
     .product-price {
       font-size: 0.9rem;
@@ -1443,6 +1426,11 @@
       var wheelEls = [];
       var isOpen   = false;
       var currentIdx = -1;
+      var rotAngle   = 0;
+      var isDragging = false;
+      var hasDragged = false;
+      var dragStartAngle = 0;
+      var dragStartX = 0, dragStartY = 0;
 
       // ── Cálculo de posiciones en rueda ──
       function getWheelTargets() {
@@ -1519,6 +1507,7 @@
                 el.classList.add('ready');
                 el.addEventListener('click', function (e) {
                   e.stopPropagation();
+                  if (hasDragged) { hasDragged = false; return; }
                   openLightbox(i);
                 });
               });
@@ -1531,6 +1520,10 @@
       function closeWheel() {
         if (!isOpen) return;
         isOpen = false;
+        rotAngle = 0;
+        isDragging = false;
+        hasDragged = false;
+        document.body.style.userSelect = '';
 
         var norva    = window._norva;
         var spherePos = norva ? norva.getPositions() : [];
@@ -1627,6 +1620,65 @@
           if (e.key === 'Escape') closeWheel();
         }
       });
+
+      // ── Drag-to-rotate ──
+      function angleFromCenter(x, y) {
+        return Math.atan2(y - window.innerHeight / 2, x - window.innerWidth / 2);
+      }
+
+      function applyRotation(angle) {
+        var N    = FOTOS.length;
+        var vmin = Math.min(window.innerWidth, window.innerHeight);
+        var sz   = Math.min(Math.max(vmin * 0.11, 44), 84);
+        var r    = Math.min((N * (sz + 8)) / (2 * Math.PI), vmin * 0.41);
+        var cx   = window.innerWidth  / 2;
+        var cy   = window.innerHeight / 2;
+        wheelEls.forEach(function (el, i) {
+          var a = (2 * Math.PI / N) * i - Math.PI / 2 + angle;
+          el.style.left = (cx + r * Math.cos(a)) + 'px';
+          el.style.top  = (cy + r * Math.sin(a)) + 'px';
+        });
+      }
+
+      function onDragStart(x, y) {
+        if (!isOpen || lightboxOverlay.classList.contains('active')) return;
+        isDragging     = true;
+        hasDragged     = false;
+        dragStartX     = x;
+        dragStartY     = y;
+        dragStartAngle = angleFromCenter(x, y) - rotAngle;
+        wheelEls.forEach(function (el) { el.style.transition = 'none'; });
+        document.body.style.userSelect = 'none';
+      }
+
+      function onDragMove(x, y) {
+        if (!isDragging) return;
+        var dx = x - dragStartX, dy = y - dragStartY;
+        if (!hasDragged && Math.sqrt(dx * dx + dy * dy) > 8) hasDragged = true;
+        if (!hasDragged) return;
+        rotAngle = angleFromCenter(x, y) - dragStartAngle;
+        applyRotation(rotAngle);
+      }
+
+      function onDragEnd() {
+        if (!isDragging) return;
+        isDragging = false;
+        document.body.style.userSelect = '';
+      }
+
+      document.addEventListener('mousedown', function (e) { onDragStart(e.clientX, e.clientY); });
+      document.addEventListener('mousemove', function (e) { onDragMove(e.clientX, e.clientY); });
+      document.addEventListener('mouseup',   onDragEnd);
+
+      galleryOverlay.addEventListener('touchstart', function (e) {
+        var t = e.touches[0];
+        onDragStart(t.clientX, t.clientY);
+      }, { passive: true });
+      document.addEventListener('touchmove', function (e) {
+        if (isDragging && hasDragged) e.preventDefault();
+        if (e.touches[0]) onDragMove(e.touches[0].clientX, e.touches[0].clientY);
+      }, { passive: false });
+      document.addEventListener('touchend', onDragEnd, { passive: true });
     })();
 
     // ── Wiggle en "Ver productos" al clickear "Comprar" ──
